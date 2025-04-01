@@ -50,6 +50,21 @@ public class MediaController {
                 .map(id -> ResponseEntity.ok("Audio metadata saved, ID: " + id));
     }
 
+    // New endpoints to get specific sprite/audio by filename
+    @GetMapping("/sprite/{filename}")
+    public Mono<ResponseEntity<Sprite>> getSpriteByFilename(@PathVariable String filename) {
+        return serverService.getSpriteByFilename(filename)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/audio/{filename}")
+    public Mono<ResponseEntity<AudioFile>> getAudioByFilename(@PathVariable String filename) {
+        return serverService.getAudioByFilename(filename)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     // =======================
     // Connection test
     @GetMapping("/test_connection")

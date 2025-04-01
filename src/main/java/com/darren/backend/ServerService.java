@@ -71,7 +71,7 @@ public class ServerService {
             .reduce(this::concat)
             .map(fullBytes -> {
                 String base64Content = Base64.getEncoder().encodeToString(fullBytes);
-    
+
                 Document doc = new Document()
                     .append("file_name", file.filename())
                     .append("content_type", file.headers().getContentType() != null
@@ -79,13 +79,13 @@ public class ServerService {
                         : "unknown")
                     .append("size", fullBytes.length)
                     .append("content", base64Content);
-    
+
                 return doc;
             })
             .flatMap(doc -> Mono.from(db.getCollection("sprites").insertOne(doc)))
             .map(result -> result.getInsertedId().toString());
     }
-    
+
     private byte[] concat(byte[] a, byte[] b) {
         byte[] result = new byte[a.length + b.length];
         System.arraycopy(a, 0, result, 0, a.length);
@@ -95,9 +95,9 @@ public class ServerService {
 
     public Mono<String> saveAudioMetadata(FilePart file) {
         return file.content().reduce(new byte[0], (prev, buffer) -> {
-            byte[] bytes = new byte[buffer.readableByteCount()]; // ✅ correct method
+            byte[] bytes = new byte[buffer.readableByteCount()];
             buffer.read(bytes);
-    
+
             byte[] combined = new byte[prev.length + bytes.length];
             System.arraycopy(prev, 0, combined, 0, prev.length);
             System.arraycopy(bytes, 0, combined, prev.length, bytes.length);
@@ -110,18 +110,18 @@ public class ServerService {
                 file.headers().getContentType() != null ? file.headers().getContentType().toString() : "unknown",
                 bytes.length
             );
-    
+
             Document doc = new Document()
                 .append("file_name", audio.getFileName())
                 .append("content_type", audio.getContentType())
                 .append("size", audio.getSize())
                 .append("content", base64);
-    
+
             return Mono.from(db.getCollection("audio").insertOne(doc))
                 .map(result -> result.getInsertedId().toString());
         });
     }
-    
+
     public Flux<Sprite> getAllSprites() {
         return Flux.from(db.getCollection("sprites").find())
                 .map(doc -> new Sprite(
@@ -147,5 +147,25 @@ public class ServerService {
 
         return Mono.from(db.getCollection("scores").insertOne(doc))
                 .map(result -> result.getInsertedId().toString());
+    }
+
+    public Mono<Sprite> getSpriteByFilename(String filename) {
+        return Mono.from(
+            db.getCollection("sprites").find(new Document("file_name", filename)).first()
+        ).map(doc -> new Sprite(
+            doc.getString("file_name"),
+            doc.getString("content_type"),
+            doc.getLong("size")
+        ));
+    }
+    
+    public Mono<AudioFile> getAudioByFilename(String filename) {
+        return Mono.from(
+            db.getCollection("audio").find(new Document("file_name", filename)).first()
+        ).map(doc -> new AudioFile(
+            doc.getString("file_name"),
+            doc.getString("content_type"),
+            doc.getLong("size")
+        ));
     }
 }
