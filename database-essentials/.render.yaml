@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: database-essentials-api
+    env: java
+    buildCommand: ./mvnw clean package
+    startCommand: java -jar target/database-essentials-1.0-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: default
