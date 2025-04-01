@@ -33,7 +33,7 @@ public class MediaController {
         return serverService.getAllSprites();
     }
 
-    @GetMapping("/audio_files")
+    @GetMapping("/audio")
     public Flux<AudioFile> getAllAudioFiles() {
         return serverService.getAllAudioFiles();
     }

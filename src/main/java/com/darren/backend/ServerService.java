@@ -108,7 +108,8 @@ public class ServerService {
             AudioFile audio = new AudioFile(
                 file.filename(),
                 file.headers().getContentType() != null ? file.headers().getContentType().toString() : "unknown",
-                bytes.length
+                bytes.length,
+                base64
             );
 
             Document doc = new Document()
@@ -127,7 +128,10 @@ public class ServerService {
                 .map(doc -> new Sprite(
                     doc.getString("file_name"),
                     doc.getString("content_type"),
-                    doc.getLong("size")
+                    doc.containsKey("size") && doc.get("size") instanceof Number
+                    ? ((Number) doc.get("size")).longValue()
+                    : 0L, // The fallback value.
+                    doc.getString("content")
                 ));
     }
 
@@ -136,7 +140,10 @@ public class ServerService {
                 .map(doc -> new AudioFile(
                     doc.getString("file_name"),
                     doc.getString("content_type"),
-                    doc.getLong("size")
+                    doc.containsKey("size") && doc.get("size") instanceof Number
+                    ? ((Number) doc.get("size")).longValue()
+                    : 0L,
+                    doc.getString("content")
                 ));
     }
 
@@ -152,20 +159,28 @@ public class ServerService {
     public Mono<Sprite> getSpriteByFilename(String filename) {
         return Mono.from(
             db.getCollection("sprites").find(new Document("file_name", filename)).first()
+
         ).map(doc -> new Sprite(
             doc.getString("file_name"),
             doc.getString("content_type"),
-            doc.getLong("size")
+            doc.containsKey("size") && doc.get("size") instanceof Number
+            ? ((Number) doc.get("size")).longValue()
+            : 0L,
+            doc.getString("content")
         ));
     }
     
     public Mono<AudioFile> getAudioByFilename(String filename) {
         return Mono.from(
             db.getCollection("audio").find(new Document("file_name", filename)).first()
+
         ).map(doc -> new AudioFile(
             doc.getString("file_name"),
             doc.getString("content_type"),
-            doc.getLong("size")
+            doc.containsKey("size") && doc.get("size") instanceof Number
+            ? ((Number) doc.get("size")).longValue()
+            : 0L,
+            doc.getString("content")
         ));
     }
 }
