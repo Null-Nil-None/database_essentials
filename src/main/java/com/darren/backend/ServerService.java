@@ -128,11 +128,7 @@ public class ServerService {
                     ? ((Number) doc.get("size")).longValue()
                     : 0L,
                 doc.getString("content")
-            ))
-            .doOnError(e -> {
-                System.out.println("ERROR while getting audio files: " + e.getMessage());
-                e.printStackTrace(); // This logs full error to Render logs
-            });
+            ));
     }
     
     public Mono<String> addScore(PlayerScore score) {
