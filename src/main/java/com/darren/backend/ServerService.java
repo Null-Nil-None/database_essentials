@@ -11,11 +11,19 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import reactor.core.publisher.Flux;
+
 import java.util.Base64;
+
 
 @Component
 public class ServerService {

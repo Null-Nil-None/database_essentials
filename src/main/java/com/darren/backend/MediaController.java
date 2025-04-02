@@ -1,5 +1,10 @@
 package com.darren.backend;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +28,21 @@ public class MediaController {
     public Mono<ResponseEntity<String>> addScore(@RequestBody PlayerScore score) {
         return serverService.addScore(score)
                 .map(id -> ResponseEntity.ok("Score recorded, ID: " + id));
+    }
+    
+    @GetMapping("/my-ip")
+    public Mono<String> getServerIp() {
+        return Mono.fromCallable(() -> {
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.ipify.org"))
+                .GET()
+                .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body();
+        });
     }
 
     // =======================
