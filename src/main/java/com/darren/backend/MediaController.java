@@ -13,7 +13,11 @@ import reactor.core.publisher.Mono;
 
 @RestController
 public class MediaController {
-    private final ServerService serverService = ServerService.getInstance("MilshakeSuchomimus", "inthegalleryofherosandlizards");
+    private final ServerService serverService;
+
+    public MediaController(ServerService serverService) {
+        this.serverService = serverService;
+    }
 
     @PostMapping("/player_score")
     public Mono<ResponseEntity<String>> addScore(@RequestBody PlayerScore score) {

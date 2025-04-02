@@ -10,25 +10,22 @@ import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.stereotype.Component;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Base64;
 
+@Component
 public class ServerService {
-    private static ServerService instance;
-
     private final MongoClient client;
     private final MongoDatabase db;
 
-    private ServerService(String username, String password) {
-        if (instance != null) {
-            throw new RuntimeException("Only a single instance of ServerService is allowed.");
-        }
-
+    public ServerService(Secrets secrets) {
         String uri = String.format(
             "mongodb+srv://%s:%s@cluster0.znflm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-            username, password
+            secrets.getDbUsername(), secrets.getDbPassword()
         );
 
         client = MongoClients.create(
@@ -38,19 +35,6 @@ public class ServerService {
         );
 
         db = client.getDatabase("multimedia_db");
-
-        instance = this;
-    }
-
-    public static ServerService getInstance(String username, String password) {
-        if (instance == null) {
-            if (username == null || password == null)
-                throw new IllegalStateException("Must provide username and password on first call.");
-            new ServerService(username, password);
-        } else if (username != null || password != null) {
-            System.out.println("[WARN] ServerService already initialized — username/password ignored.");
-        }
-        return instance;
     }
 
     public Flux<PlayerScore> getScores() {

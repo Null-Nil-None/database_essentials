@@ -1,4 +1,9 @@
 services:
+  - key: DB_USERNAME
+    value: MilshakeSuchomimus
+  - key: DB_PASSWORD
+    value: inthegalleryofherosandlizards
+
   - type: web
     name: database-essentials-api
     env: java

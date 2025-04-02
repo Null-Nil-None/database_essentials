@@ -4,4 +4,5 @@ com\darren\backend\Application.class
 com\darren\backend\documents\Sprite.class
 com\darren\backend\ServerService.class
 com\darren\backend\MediaController.class
+com\darren\backend\Secrets.class
 com\darren\backend\documents\PlayerScore.class
