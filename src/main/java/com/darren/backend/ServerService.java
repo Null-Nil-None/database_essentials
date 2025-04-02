@@ -121,16 +121,20 @@ public class ServerService {
 
     public Flux<AudioFile> getAllAudioFiles() {
         return Flux.from(db.getCollection("audio").find())
-                .map(doc -> new AudioFile(
-                    doc.getString("file_name"),
-                    doc.getString("content_type"),
-                    doc.containsKey("size") && doc.get("size") instanceof Number
+            .map(doc -> new AudioFile(
+                doc.getString("file_name"),
+                doc.getString("content_type"),
+                doc.containsKey("size") && doc.get("size") instanceof Number
                     ? ((Number) doc.get("size")).longValue()
                     : 0L,
-                    doc.getString("content")
-                ));
+                doc.getString("content")
+            ))
+            .doOnError(e -> {
+                System.out.println("ERROR while getting audio files: " + e.getMessage());
+                e.printStackTrace(); // This logs full error to Render logs
+            });
     }
-
+    
     public Mono<String> addScore(PlayerScore score) {
         Document doc = new Document()
                 .append("player_name", score.getPlayerName())
