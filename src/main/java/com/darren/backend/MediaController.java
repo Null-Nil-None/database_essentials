@@ -74,7 +74,6 @@ public class MediaController {
                 .map(id -> ResponseEntity.ok("Audio metadata saved, ID: " + id));
     }
 
-    // New endpoints to get specific sprite/audio by filename
     @GetMapping("/sprite/{filename}")
     public Mono<ResponseEntity<Sprite>> getSpriteByFilename(@PathVariable String filename) {
         return serverService.getSpriteByFilename(filename)
